@@ -19,6 +19,17 @@ var pbx = require('../lib/pbxProject'),
     fs = require('fs'),
     myProj;
 
+function normalizeContents(content) {
+    var normalized = content;
+
+    // normalize tabs vs strings
+    normalized = normalized.replace(/    /g, '\t');
+    // normalize to posix line endings
+    normalized = normalized.replace(/\r\n/g, '\n');
+
+    return normalized;
+}
+
 function testProjectContents(filename, test, expectedFilename) {
     var myProj = new pbx(filename);
 
@@ -28,8 +39,8 @@ function testProjectContents(filename, test, expectedFilename) {
     } else {
         content = fs.readFileSync(filename, 'utf-8');
     }
-    // normalize tabs vs strings
-    content = content.replace(/    /g, '\t');
+
+    content = normalizeContents(content);
 
     myProj.parse(function (err, projHash) {
         var written = myProj.writeSync();
@@ -42,10 +53,7 @@ function testProjectContents(filename, test, expectedFilename) {
 // for debugging failing tests
 function testContentsInDepth(filename, test) {
     var myProj = new pbx(filename),
-        content = fs.readFileSync(filename, 'utf-8');
-
-    // normalize tabs vs strings
-    content = content.replace(/    /g, '\t');
+        content = normalizeContents(fs.readFileSync(filename, 'utf-8'));
 
     myProj.parse(function (err, projHash) {
         var written = myProj.writeSync(),
@@ -100,7 +108,7 @@ exports.writeSync = {
     'should not null and undefined with the "omitEmptyValues" option set to false test': function (test) {
         var filename = 'test/parser/projects/with_omit_empty_values_disabled.pbxproj'
         var expectedFilename = 'test/parser/projects/expected/with_omit_empty_values_disabled_expected.pbxproj'
-        var content = fs.readFileSync(expectedFilename, 'utf-8').replace(/    /g, '\t');
+        var content = normalizeContents(fs.readFileSync(expectedFilename, 'utf-8'));
         var project = new pbx(filename);
         project.parse(function (err) {
             if (err) {
@@ -116,7 +124,7 @@ exports.writeSync = {
     'should drop null and undefined with the "omitEmptyValues" option set to true test': function (test) {
         var filename = 'test/parser/projects/with_omit_empty_values_enabled.pbxproj'
         var expectedFilename = 'test/parser/projects/expected/with_omit_empty_values_enabled_expected.pbxproj'
-        var content = fs.readFileSync(expectedFilename, 'utf-8').replace(/    /g, '\t');
+        var content = normalizeContents(fs.readFileSync(expectedFilename, 'utf-8'));
         var project = new pbx(filename);
         project.parse(function (err) {
             if (err) {
