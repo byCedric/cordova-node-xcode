@@ -283,3 +283,14 @@ exports['settings'] = {
         test.done();
     }
 }
+
+exports['normalizePath'] = {
+    'should return relative posix path': function (test) {
+        test.equal('Plugins/BarcideScanner.m', pbxFile.normalizePath('Plugins/BarcideScanner.m'));
+        test.done();
+    },
+    'should return relative posix path from backslash': function (test) {
+        test.equal('Plugins/BarcideScanner.m', pbxFile.normalizePath('Plugins\\BarcideScanner.m'));
+        test.done();
+    },
+}
