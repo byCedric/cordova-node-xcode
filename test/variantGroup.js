@@ -16,6 +16,7 @@
  */
 
 var pbx = require('../lib/pbxProject'),
+    path = require('path'),
     project,
     projectHash;
 
@@ -73,7 +74,7 @@ var findByName = function(obj, target) {
 }
 
 exports.setUp = function(callback) {
-    project = new pbx('test/parser/projects/variantgroup.pbxproj');
+    project = new pbx(path.join('test', 'parser', 'projects', 'variantgroup.pbxproj'));
     projectHash = project.parseSync();
     callback();
 }
@@ -154,7 +155,7 @@ exports.addResourceFileToLocalisationGroup = {
 
         var infoPlistVarGp = project.addLocalizationVariantGroup('InfoPlist.strings');
         var testKey = infoPlistVarGp.fileRef;
-        var file = project.addResourceFile('Resources/en.lproj/Localization.strings', {variantGroup: true}, testKey);
+        var file = project.addResourceFile(path.join('Resources', 'en.lproj', 'Localization.strings'), {variantGroup: true}, testKey);
 
         var foundInLocalisationVariantGroup = findChildInGroup(project.getPBXVariantGroupByKey(testKey), file.fileRef );
         test.ok(foundInLocalisationVariantGroup);
@@ -179,12 +180,12 @@ exports.addResourceFileToLocalisationGroup = {
 exports.removeResourceFileFromGroup = {
     'should add resource file then remove resource file from Localizable.strings group' : function(test) {
         var testKey = project.findPBXVariantGroupKey({name:'Localizable.strings'});
-        var file = project.addResourceFile('Resources/zh.lproj/Localization.strings', {}, testKey);
+        var file = project.addResourceFile(path.join('Resources', 'zh.lproj', 'Localization.strings'), {}, testKey);
 
         var foundInGroup = findChildInGroup(project.getPBXVariantGroupByKey(testKey),file.fileRef );
         test.ok(foundInGroup);
 
-        project.removeResourceFile('Resources/zh.lproj/Localization.strings', {}, testKey);
+        project.removeResourceFile(path.join('Resources', 'zh.lproj', 'Localization.strings'), {}, testKey);
 
         var foundInGroup = findChildInGroup(project.getPBXVariantGroupByKey(testKey),file.fileRef );
         test.ok(!foundInGroup);

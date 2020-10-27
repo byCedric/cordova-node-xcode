@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -204,8 +205,7 @@ exports.addStaticLibrary = {
         test.done();
     },
     'should add to the Plugins group, optionally': function (test) {
-        var newFile = proj.addStaticLibrary('libGoogleAnalytics.a',
-                                        { plugin: true }),
+        var newFile = proj.addStaticLibrary('libGoogleAnalytics.a', { plugin: true }),
             plugins = proj.pbxGroupByName('Plugins');
 
         test.equal(plugins.children.length, 1);
@@ -216,8 +216,7 @@ exports.addStaticLibrary = {
             plugins = proj.pbxGroupByName('Plugins');
             plugins.path = '"Test200/Plugins"';
 
-            var newFile = proj.addStaticLibrary('Plugins/libGoogleAnalytics.a',
-                                            { plugin: true }),
+            var newFile = proj.addStaticLibrary(path.join('Plugins', 'libGoogleAnalytics.a'), { plugin: true }),
                 libraryPaths = librarySearchPaths(proj),
                 expectedPath = '"\\"$(SRCROOT)/Test200/Plugins\\""',
                 i, current;
@@ -234,8 +233,7 @@ exports.addStaticLibrary = {
             plugins = proj.pbxGroupByName('Plugins');
             delete plugins.path;
 
-            var newFile = proj.addStaticLibrary('Plugins/libGoogleAnalytics.a',
-                                            { plugin: true }),
+            var newFile = proj.addStaticLibrary(path.join('Plugins', 'libGoogleAnalytics.a'), { plugin: true }),
                 libraryPaths = librarySearchPaths(proj),
                 expectedPath = '"\\"$(SRCROOT)/KitchenSinktablet/Plugins\\""',
                 i, current;
@@ -257,11 +255,9 @@ exports.addStaticLibrary = {
             test.done();
         },
         'should return false (plugin entries)': function (test) {
-            var newFile = proj.addStaticLibrary('Plugins/libGoogleAnalytics.a',
-                                                { plugin: true });
+            var newFile = proj.addStaticLibrary(path.join('Plugins', 'libGoogleAnalytics.a'), { plugin: true });
 
-            test.ok(!proj.addStaticLibrary('Plugins/libGoogleAnalytics.a',
-                                                { plugin: true }));
+            test.ok(!proj.addStaticLibrary(path.join('Plugins', 'libGoogleAnalytics.a'), { plugin: true }));
             test.done();
         },
     }

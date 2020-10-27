@@ -18,7 +18,8 @@
 var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
-    pbxFile = require('../lib/pbxFile'),
+    pbxFile = require('../lib/pbxFile')
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -196,21 +197,21 @@ exports.addFramework = {
         }
     },
     'should pbxFile correctly for custom frameworks': function (test) {
-        var newFile = proj.addFramework('/path/to/Custom.framework', {customFramework: true});
+        var newFile = proj.addFramework(path.join('path', 'to', 'Custom.framework'), {customFramework: true});
 
         test.ok(newFile.customFramework);
         test.ok(!newFile.fileEncoding);
         test.equal(newFile.sourceTree, '"<group>"');
         test.equal(newFile.group, 'Frameworks');
         test.equal(newFile.basename, 'Custom.framework');
-        test.equal(newFile.dirname, '/path/to');
+        test.equal(newFile.dirname, 'path/to');
         // XXX framework has to be copied over to PROJECT root. That is what XCode does when you drag&drop
-        test.equal(newFile.path, '/path/to/Custom.framework');
+        test.equal(newFile.path, 'path/to/Custom.framework');
 
 
         // should add path to framework search path
         var frameworkPaths = frameworkSearchPaths(proj);
-            expectedPath = '"\\"/path/to\\""';
+            expectedPath = '"\\"path/to\\""';
 
         for (i = 0; i < frameworkPaths.length; i++) {
             var current = frameworkPaths[i];
@@ -220,7 +221,7 @@ exports.addFramework = {
         test.done();
     },
     'should add to the Embed Frameworks PBXCopyFilesBuildPhase': function (test) {
-        var newFile = proj.addFramework('/path/to/SomeEmbeddableCustom.framework', {customFramework: true, embed: true}),
+        var newFile = proj.addFramework(path.join('path', 'to', 'Custom.framework'), {customFramework: true, embed: true}),
             frameworks = proj.pbxEmbedFrameworksBuildPhaseObj();
 
         var buildPhaseInPbx = proj.pbxEmbedFrameworksBuildPhaseObj();
@@ -230,14 +231,14 @@ exports.addFramework = {
         test.done();
     },
     'should not add to the Embed Frameworks PBXCopyFilesBuildPhase by default': function (test) {
-        var newFile = proj.addFramework('/path/to/Custom.framework', {customFramework: true}),
+        var newFile = proj.addFramework(path.join('path', 'to', 'Custom.framework'), {customFramework: true}),
             frameworks = proj.pbxEmbedFrameworksBuildPhaseObj();
 
         test.equal(frameworks.files.length, 0);
         test.done();
     },
     'should add the PBXBuildFile object correctly /w signable frameworks': function (test) {
-        var newFile = proj.addFramework('/path/to/SomeSignable.framework', { customFramework: true, embed: true, sign: true }),
+        var newFile = proj.addFramework(path.join('path', 'to', 'SomeSignable.framework'), { customFramework: true, embed: true, sign: true }),
             buildFileSection = proj.pbxBuildFileSection(),
             buildFileEntry = buildFileSection[newFile.uuid];
 

@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -101,7 +102,7 @@ exports.addResourceFile = {
     'should add the PBXFileReference object correctly': function (test) {
         delete proj.pbxGroupByName('Resources').path;
 
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             fileRefSection = proj.pbxFileReferenceSection(),
             fileRefEntry = fileRefSection[newFile.fileRef];
 
@@ -115,14 +116,14 @@ exports.addResourceFile = {
         test.done();
     },
     'should add to the Resources PBXGroup group': function (test) {
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             resources = proj.pbxGroupByName('Resources');
 
         test.equal(resources.children.length, 10);
         test.done();
     },
     'should have the right values for the PBXGroup entry': function (test) {
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             resources = proj.pbxGroupByName('Resources'),
             resourceObj = resources.children[9];
 
@@ -131,14 +132,14 @@ exports.addResourceFile = {
         test.done();
     },
     'should add to the PBXSourcesBuildPhase': function (test) {
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             sources = proj.pbxResourcesBuildPhaseObj();
 
         test.equal(sources.files.length, 13);
         test.done();
     },
     'should have the right values for the Sources entry': function (test) {
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             sources = proj.pbxResourcesBuildPhaseObj(),
             sourceObj = sources.files[12];
 
@@ -151,7 +152,7 @@ exports.addResourceFile = {
             newFile;
 
         resources.path = '"Test200/Resources"';
-        newFile = proj.addResourceFile('Resources/assets.bundle');
+        newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle'));
 
         test.equal(newFile.path, 'assets.bundle');
         test.done();
@@ -161,8 +162,7 @@ exports.addResourceFile = {
         'should add the PBXFileReference with the "Plugins" path': function (test) {
             delete proj.pbxGroupByName('Plugins').path;
 
-            var newFile = proj.addResourceFile('Plugins/assets.bundle',
-                                                { plugin: true }),
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true }),
                 fileRefSection = proj.pbxFileReferenceSection(),
                 fileRefEntry = fileRefSection[newFile.fileRef];
 
@@ -176,8 +176,7 @@ exports.addResourceFile = {
         },
 
         'should add to the Plugins PBXGroup group': function (test) {
-            var newFile = proj.addResourceFile('Plugins/assets.bundle',
-                                                { plugin: true }),
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true }),
                 plugins = proj.pbxGroupByName('Plugins');
 
             test.equal(plugins.children.length, 1);
@@ -185,8 +184,7 @@ exports.addResourceFile = {
         },
 
         'should have the Plugins values for the PBXGroup entry': function (test) {
-            var newFile = proj.addResourceFile('Plugins/assets.bundle',
-                                                { plugin: true }),
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true }),
                 plugins = proj.pbxGroupByName('Plugins'),
                 pluginObj = plugins.children[0];
 
@@ -196,8 +194,7 @@ exports.addResourceFile = {
         },
 
         'should add to the PBXSourcesBuildPhase': function (test) {
-            var newFile = proj.addResourceFile('Plugins/assets.bundle',
-                                                { plugin: true }),
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true }),
                 sources = proj.pbxResourcesBuildPhaseObj();
 
             test.equal(sources.files.length, 13);
@@ -205,8 +202,7 @@ exports.addResourceFile = {
         },
 
         'should have the right values for the Sources entry': function (test) {
-            var newFile = proj.addResourceFile('Plugins/assets.bundle',
-                                                { plugin: true }),
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true }),
                 sources = proj.pbxResourcesBuildPhaseObj(),
                 sourceObj = sources.files[12];
 
@@ -220,8 +216,7 @@ exports.addResourceFile = {
                 newFile;
 
             plugins.path = '"Test200/Plugins"';
-            newFile = proj.addResourceFile('Plugins/assets.bundle',
-                                            { plugin: true });
+            newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true });
 
             test.equal(newFile.path, 'assets.bundle');
             test.done();
@@ -230,8 +225,7 @@ exports.addResourceFile = {
     'when added with { variantGroup: true }': {
 
         'should not add to the PBXResourcesBuildPhase and PBXBuildFile': function (test) {
-            var newFile = proj.addResourceFile('en.lproj/Localization.strings',
-                { variantGroup: true });
+            var newFile = proj.addResourceFile(path.join('en.lproj', 'Localization.strings'), { variantGroup: true });
 
             var sources = proj.pbxResourcesBuildPhaseObj();
             test.equal(sources.files.length, 12);
@@ -245,21 +239,19 @@ exports.addResourceFile = {
     },
     'duplicate entries': {
         'should return false': function (test) {
-            var newFile = proj.addResourceFile('Plugins/assets.bundle');
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'));
 
-            test.ok(!proj.addResourceFile('Plugins/assets.bundle'));
+            test.ok(!proj.addResourceFile(path.join('Plugins', 'assets.bundle')));
             test.done();
         },
         'should return false (plugin entries)': function (test) {
-            var newFile = proj.addResourceFile('Plugins/assets.bundle',
-                                                { plugin: true });
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true });
 
-            test.ok(!proj.addResourceFile('Plugins/assets.bundle',
-                                                { plugin: true }));
+            test.ok(!proj.addResourceFile(path.join('Plugins', 'assets.bundle'), { plugin: true }));
             test.done();
         },
         'should not add another entry anywhere': function (test) {
-            var newFile = proj.addResourceFile('Plugins/assets.bundle'),
+            var newFile = proj.addResourceFile(path.join('Plugins', 'assets.bundle')),
                 buildFileSection = proj.pbxBuildFileSection(),
                 bfsLength = Object.keys(buildFileSection).length,
                 fileRefSection = proj.pbxFileReferenceSection(),
@@ -267,7 +259,7 @@ exports.addResourceFile = {
                 resources = proj.pbxGroupByName('Resources'),
                 sources = proj.pbxResourcesBuildPhaseObj();
 
-            proj.addResourceFile('Plugins/assets.bundle');
+            proj.addResourceFile(path.join('Plugins', 'assets.bundle'));
 
             // check lengths
             test.equal(60, bfsLength);

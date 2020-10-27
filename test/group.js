@@ -17,6 +17,7 @@
 
 var pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     project,
     projectHash;
 
@@ -74,7 +75,7 @@ var findByName = function(obj, target) {
 }
 
 exports.setUp = function(callback) {
-    project = new pbx('test/parser/projects/group.pbxproj');
+    project = new pbx(path.join('test', 'parser', 'projects', 'group.pbxproj'));
     projectHash = project.parseSync();
     callback();
 }
@@ -157,7 +158,7 @@ exports.addGroupToGroup = {
 
 exports.predefinedPbxGroups = {
     setUp: function(callback) {
-        project = new pbx('test/parser/projects/empty-groups.pbxproj').parseSync();
+        project = new pbx(path.join('test', 'parser', 'projects', 'empty-groups.pbxproj')).parseSync();
 
         this.file = new pbxFile('some-file.m');
         this.file.fileRef = project.generateUuid();

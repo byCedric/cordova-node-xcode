@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project'),
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -147,18 +148,18 @@ exports.removeFramework = {
         test.done();
     },
     'should remove custom frameworks': function (test) {
-        var newFile = proj.addFramework('/path/to/Custom.framework', { customFramework: true }),
+        var newFile = proj.addFramework(path.join('path', 'to', 'Custom.framework'), { customFramework: true }),
             frameworks = proj.pbxFrameworksBuildPhaseObj();
 
         test.equal(frameworks.files.length, 16);
 
-        var deletedFile = proj.removeFramework('/path/to/Custom.framework', { customFramework: true }),
+        var deletedFile = proj.removeFramework(path.join('path', 'to', 'Custom.framework'), { customFramework: true }),
             frameworks = proj.pbxFrameworksBuildPhaseObj();
 
         test.equal(frameworks.files.length, 15);
 
         var frameworkPaths = frameworkSearchPaths(proj);
-            expectedPath = '"/path/to"';
+            expectedPath = '"path/to"';
 
         for (i = 0; i < frameworkPaths.length; i++) {
             var current = frameworkPaths[i];
@@ -168,7 +169,7 @@ exports.removeFramework = {
         test.done();
     },
     'should remove embedded frameworks': function (test) {
-        var newFile = proj.addFramework('/path/to/Custom.framework', { customFramework: true, embed:true, sign:true }),
+        var newFile = proj.addFramework(path.join('path', 'to', 'Custom.framework'), { customFramework: true, embed:true, sign:true }),
             frameworks = proj.pbxFrameworksBuildPhaseObj(),
             buildFileSection = proj.pbxBuildFileSection(),
             bfsLength = Object.keys(buildFileSection).length;
@@ -176,7 +177,7 @@ exports.removeFramework = {
         test.equal(frameworks.files.length, 16);
         test.equal(62, bfsLength);
 
-        var deletedFile = proj.removeFramework('/path/to/Custom.framework', { customFramework: true, embed:true }),
+        var deletedFile = proj.removeFramework(path.join('path', 'to', 'Custom.framework'), { customFramework: true, embed:true }),
             frameworks = proj.pbxFrameworksBuildPhaseObj(),
             buildFileSection = proj.pbxBuildFileSection(),
             bfsLength = Object.keys(buildFileSection).length;
@@ -185,7 +186,7 @@ exports.removeFramework = {
         test.equal(58, bfsLength);
 
         var frameworkPaths = frameworkSearchPaths(proj);
-        expectedPath = '"/path/to"';
+        expectedPath = '"path/to"';
 
         for (i = 0; i < frameworkPaths.length; i++) {
             var current = frameworkPaths[i];

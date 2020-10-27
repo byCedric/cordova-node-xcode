@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -151,7 +152,7 @@ exports.removeResourceFile = {
     'should remove the PBXFileReference object correctly': function (test) {
         delete proj.pbxGroupByName('Resources').path;
 
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             fileRefSection = proj.pbxFileReferenceSection(),
             fileRefEntry = fileRefSection[newFile.fileRef];
 
@@ -162,7 +163,7 @@ exports.removeResourceFile = {
         test.equal(fileRefEntry.path, '"Resources/assets.bundle"');
         test.equal(fileRefEntry.sourceTree, '"<group>"');
 
-        var deletedFile = proj.removeResourceFile('Resources/assets.bundle'),
+        var deletedFile = proj.removeResourceFile(path.join('Resources', 'assets.bundle')),
             fileRefSection = proj.pbxFileReferenceSection(),
             fileRefEntry = fileRefSection[deletedFile.fileRef];
 
@@ -171,24 +172,24 @@ exports.removeResourceFile = {
         test.done();
     },
     'should remove from the Resources PBXGroup group': function (test) {
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             resources = proj.pbxGroupByName('Resources');
 
         test.equal(resources.children.length, 10);
 
-        var deletedFile = proj.removeResourceFile('Resources/assets.bundle'),
+        var deletedFile = proj.removeResourceFile(path.join('Resources', 'assets.bundle')),
             resources = proj.pbxGroupByName('Resources');
 
         test.equal(resources.children.length, 9);
         test.done();
     },
     'should remove from the PBXSourcesBuildPhase': function (test) {
-        var newFile = proj.addResourceFile('Resources/assets.bundle'),
+        var newFile = proj.addResourceFile(path.join('Resources', 'assets.bundle')),
             sources = proj.pbxResourcesBuildPhaseObj();
 
         test.equal(sources.files.length, 13);
 
-        var deletedFile = proj.removeResourceFile('Resources/assets.bundle'),
+        var deletedFile = proj.removeResourceFile(path.join('Resources', 'assets.bundle')),
             sources = proj.pbxResourcesBuildPhaseObj();
 
         test.equal(sources.files.length, 12);

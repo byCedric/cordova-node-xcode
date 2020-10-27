@@ -18,6 +18,7 @@
 var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
+    path = require('path'),
     proj = new pbx('.'),
     debugConfiguration = {
 		isa: 'XCBuildConfiguration',
@@ -55,21 +56,21 @@ exports.setUp = function (callback) {
 
 exports.addXCConfigurationList = {
     'should return an XCConfigurationList': function (test) {
-        var myProj = new pbx('test/parser/projects/full.pbxproj').parseSync(),
+        var myProj = new pbx(path.join('test', 'parser', 'projects', 'full.pbxproj')).parseSync(),
             xcConfigurationList = myProj.addXCConfigurationList([debugConfiguration, releaseConfiguration], 'Release', 'XCConfigurationList Comment');
 
         test.ok(typeof xcConfigurationList === 'object');
         test.done();
     },
     'should set a uuid on the XCConfigurationList': function (test) {
-         var myProj = new pbx('test/parser/projects/full.pbxproj').parseSync(),
+         var myProj = new pbx(path.join('test', 'parser', 'projects', 'full.pbxproj')).parseSync(),
             xcConfigurationList = myProj.addXCConfigurationList([debugConfiguration, releaseConfiguration], 'Release', 'XCConfigurationList Comment');
 
         test.ok(xcConfigurationList.uuid);
         test.done();
     },
     'should add configurations to pbxBuildConfigurationSection': function (test) {
-        var myProj = new pbx('test/parser/projects/full.pbxproj').parseSync(),
+        var myProj = new pbx(path.join('test', 'parser', 'projects', 'full.pbxproj')).parseSync(),
             pbxBuildConfigurationSection = myProj.pbxXCBuildConfigurationSection(),
             xcConfigurationList = myProj.addXCConfigurationList([debugConfiguration, releaseConfiguration], 'Release', 'XCConfigurationList Comment'),
             xcConfigurationListConfigurations = xcConfigurationList.xcConfigurationList.buildConfigurations;
@@ -82,7 +83,7 @@ exports.addXCConfigurationList = {
         test.done();
     },
     'should add XCConfigurationList to pbxXCConfigurationListSection': function (test) {
-        var myProj = new pbx('test/parser/projects/full.pbxproj').parseSync(),
+        var myProj = new pbx(path.join('test', 'parser', 'projects', 'full.pbxproj')).parseSync(),
             pbxXCConfigurationListSection = myProj.pbxXCConfigurationList();
             xcConfigurationList = myProj.addXCConfigurationList([debugConfiguration, releaseConfiguration], 'Release', 'XCConfigurationList Comment');
 
@@ -90,7 +91,7 @@ exports.addXCConfigurationList = {
         test.done();
     },
     'should add XCConfigurationList object correctly': function (test) {
-        var myProj = new pbx('test/parser/projects/full.pbxproj').parseSync(),
+        var myProj = new pbx(path.join('test', 'parser', 'projects', 'full.pbxproj')).parseSync(),
             pbxXCConfigurationListSection = myProj.pbxXCConfigurationList();
             xcConfigurationList = myProj.addXCConfigurationList([debugConfiguration, releaseConfiguration], 'Release', 'XCConfigurationList Comment'),
             xcConfigurationListInPbx = pbxXCConfigurationListSection[xcConfigurationList.uuid];
@@ -99,7 +100,7 @@ exports.addXCConfigurationList = {
         test.done();
     },
     'should add correct configurations to XCConfigurationList and to pbxBuildConfigurationSection': function (test) {
-        var myProj = new pbx('test/parser/projects/full.pbxproj').parseSync(),
+        var myProj = new pbx(path.join('test', 'parser', 'projects', 'full.pbxproj')).parseSync(),
             pbxXCConfigurationListSection = myProj.pbxXCConfigurationList();
             pbxBuildConfigurationSection = myProj.pbxXCBuildConfigurationSection(),
             xcConfigurationList = myProj.addXCConfigurationList([debugConfiguration, releaseConfiguration], 'Release', 'XCConfigurationList Comment'),
@@ -117,7 +118,7 @@ exports.addXCConfigurationList = {
         test.done();
     },
     'should set comments for pbxBuildConfigurations': function (test) {
-        var myProj = new pbx('test/parser/projects/full.pbxproj').parseSync(),
+        var myProj = new pbx(path.join('test', 'parser', 'projects', 'full.pbxproj')).parseSync(),
             pbxBuildConfigurationSection = myProj.pbxXCBuildConfigurationSection(),
             xcConfigurationList = myProj.addXCConfigurationList([debugConfiguration, releaseConfiguration], 'Release', 'XCConfigurationList Comment'),
             xcConfigurationListConfigurations = xcConfigurationList.xcConfigurationList.buildConfigurations;

@@ -15,12 +15,13 @@
  under the License.
  */
 
-var xcode5proj = require('./fixtures/library-search-paths')
+var xcode5proj = require('./fixtures/library-search-paths'),
     xcode5projStr = JSON.stringify(xcode5proj),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.'),
-    libPoop = { path: 'some/path/poop.a' };
+    libPoop = { path: path.join('some', 'path', 'poop.a') };
 
 function cleanHash() {
     return JSON.parse(xcode5projStr);

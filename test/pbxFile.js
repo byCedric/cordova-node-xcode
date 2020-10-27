@@ -15,32 +15,33 @@
  under the License.
  */
 
-var pbxFile = require('../lib/pbxFile');
+var pbxFile = require('../lib/pbxFile'),
+    path = require('path');
 
 exports['lastKnownFileType'] = {
     'should detect that a .m path means sourcecode.c.objc': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.m');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.m'));
 
         test.equal('sourcecode.c.objc', sourceFile.lastKnownFileType);
         test.done();
     },
 
     'should detect that a .h path means sourceFile.c.h': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.h');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.h'));
 
         test.equal('sourcecode.c.h', sourceFile.lastKnownFileType);
         test.done();
     },
 
     'should detect that a .bundle path means "wrapper.plug-in"': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.bundle');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.bundle'));
 
         test.equal('wrapper.plug-in', sourceFile.lastKnownFileType);
         test.done();
     },
 
     'should detect that a .xib path means file.xib': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.xib');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.xib'));
 
         test.equal('file.xib', sourceFile.lastKnownFileType);
         test.done();
@@ -82,15 +83,14 @@ exports['lastKnownFileType'] = {
     },
 
     'should allow lastKnownFileType to be overridden': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.m',
-                { lastKnownFileType: 'somestupidtype' });
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.m'), { lastKnownFileType: 'somestupidtype' });
 
         test.equal('somestupidtype', sourceFile.lastKnownFileType);
         test.done();
     },
 
     'should set lastKnownFileType to unknown if undetectable': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.guh');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.guh'));
 
         test.equal('unknown', sourceFile.lastKnownFileType);
         test.done();
@@ -99,7 +99,7 @@ exports['lastKnownFileType'] = {
 
 exports['group'] = {
     'should be Sources for source files': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.m');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.m'));
 
         test.equal('Sources', sourceFile.group);
         test.done();
@@ -129,8 +129,8 @@ exports['group'] = {
         test.done();
     },
     'should be Resources for all other files': function (test) {
-        var headerFile = new pbxFile('Plugins/ChildBrowser.h'),
-            xibFile = new pbxFile('Plugins/ChildBrowser.xib');
+        var headerFile = new pbxFile(path.join('Plugins', 'ChildBrowser.h')),
+            xibFile = new pbxFile(path.join('Plugins', 'ChildBrowser.xib'));
 
         test.equal('Resources', headerFile.group);
         test.equal('Resources', xibFile.group);
@@ -146,7 +146,7 @@ exports['group'] = {
 
 exports['basename'] = {
     'should be as expected': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.m');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.m'));
 
         test.equal('ChildBrowser.m', sourceFile.basename);
         test.done();
@@ -176,15 +176,14 @@ exports['sourceTree'] = {
     },
 
     'should default to "<group>" otherwise': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.m');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.m'));
 
         test.equal('"<group>"', sourceFile.sourceTree);
         test.done();
     },
 
     'should be overridable either way': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.m',
-            { sourceTree: 'SOMETHING'});
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.m'), { sourceTree: 'SOMETHING'});
 
         test.equal('SOMETHING', sourceFile.sourceTree);
         test.done();
@@ -222,7 +221,7 @@ exports['path'] = {
 
 
     'should default to the first argument otherwise': function (test) {
-        var sourceFile = new pbxFile('Plugins/ChildBrowser.m');
+        var sourceFile = new pbxFile(path.join('Plugins', 'ChildBrowser.m'));
 
         test.equal('Plugins/ChildBrowser.m', sourceFile.path);
         test.done();
@@ -238,10 +237,8 @@ exports['settings'] = {
     },
 
     'should be undefined if weak is false or non-boolean': function (test) {
-        var sourceFile1 = new pbxFile('social.framework',
-            { weak: false });
-        var sourceFile2 = new pbxFile('social.framework',
-            { weak: 'bad_value' });
+        var sourceFile1 = new pbxFile('social.framework', { weak: false });
+        var sourceFile2 = new pbxFile('social.framework', { weak: 'bad_value' });
 
         test.equal(undefined, sourceFile1.settings);
         test.equal(undefined, sourceFile2.settings);
@@ -249,40 +246,38 @@ exports['settings'] = {
     },
 
     'should be {ATTRIBUTES:["Weak"]} if weak linking specified': function (test) {
-        var sourceFile = new pbxFile('social.framework',
-            { weak: true });
+        var sourceFile = new pbxFile('social.framework', { weak: true });
 
         test.deepEqual({ATTRIBUTES:["Weak"]}, sourceFile.settings);
         test.done();
     },
 
     'should be {ATTRIBUTES:["CodeSignOnCopy"]} if sign specified': function (test) {
-        var sourceFile = new pbxFile('signable.framework',
-            { embed: true, sign: true });
+        var sourceFile = new pbxFile('signable.framework', { embed: true, sign: true });
 
         test.deepEqual({ATTRIBUTES:["CodeSignOnCopy"]}, sourceFile.settings);
         test.done();
     },
 
     'should be {ATTRIBUTES:["Weak","CodeSignOnCopy"]} if both weak linking and sign specified': function (test) {
-        var sourceFile = new pbxFile('signableWeak.framework',
-            { embed: true, weak: true, sign: true });
+        var sourceFile = new pbxFile('signableWeak.framework', { embed: true, weak: true, sign: true });
 
         test.deepEqual({ATTRIBUTES:["Weak", "CodeSignOnCopy"]}, sourceFile.settings);
         test.done();
     },
 
     'should be {COMPILER_FLAGS:"blah"} if compiler flags specified': function (test) {
-        var sourceFile = new pbxFile('Plugins/BarcodeScanner.m',
-            { compilerFlags: "-std=c++11 -fno-objc-arc" });
+        var sourceFile = new pbxFile(
+            path.join('Plugins', 'BarcodeScanner.m'),
+            { compilerFlags: "-std=c++11 -fno-objc-arc" }
+        );
 
         test.deepEqual({COMPILER_FLAGS:'"-std=c++11 -fno-objc-arc"'}, sourceFile.settings);
         test.done();
     },
 
     'should be .appex if {explicitFileType:\'"wrapper.app-extension"\'} specified': function (test) {
-        var sourceFile = new pbxFile('AppExtension',
-            { explicitFileType: '"wrapper.app-extension"'});
+        var sourceFile = new pbxFile('AppExtension', { explicitFileType: '"wrapper.app-extension"'});
 
         test.equal('AppExtension.appex', sourceFile.basename);
         test.done();

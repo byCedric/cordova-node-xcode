@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -87,7 +88,7 @@ exports.removeHeaderFile = {
         test.done();
     },
     'should remove the PBXFileReference object correctly': function (test) {
-        var newFile = proj.addHeaderFile('Plugins/file.h'),
+        var newFile = proj.addHeaderFile(path.join('Plugins', 'file.h')),
             fileRefSection = proj.pbxFileReferenceSection(),
             fileRefEntry = fileRefSection[newFile.fileRef];
 
@@ -98,7 +99,7 @@ exports.removeHeaderFile = {
         test.equal(fileRefEntry.path, '"file.h"');
         test.equal(fileRefEntry.sourceTree, '"<group>"');
 
-        var deletedFile = proj.removeHeaderFile('Plugins/file.h'),
+        var deletedFile = proj.removeHeaderFile(path.join('Plugins', 'file.h')),
             fileRefSection = proj.pbxFileReferenceSection(),
             fileRefEntry = fileRefSection[deletedFile.fileRef];
 
@@ -107,12 +108,12 @@ exports.removeHeaderFile = {
         test.done();
     },
     'should remove from the Plugins PBXGroup group': function (test) {
-        var newFile = proj.addHeaderFile('Plugins/file.h'),
+        var newFile = proj.addHeaderFile(path.join('Plugins', 'file.h')),
             plugins = proj.pbxGroupByName('Plugins');
 
         test.equal(plugins.children.length, 1);
 
-        var deletedFile = proj.removeHeaderFile('Plugins/file.h'),
+        var deletedFile = proj.removeHeaderFile(path.join('Plugins', 'file.h')),
             plugins = proj.pbxGroupByName('Plugins');
 
         test.equal(plugins.children.length, 0);

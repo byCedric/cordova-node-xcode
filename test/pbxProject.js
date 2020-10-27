@@ -19,6 +19,7 @@ var pbx = require('../lib/pbxProject'),
     buildConfig = require('./fixtures/buildFiles'),
     jsonProject = require('./fixtures/full-project'),
     fs = require('fs'),
+    path = require('path'),
     project;
 
 exports['creation'] = {
@@ -374,5 +375,21 @@ exports['hasFile'] = {
         //  sourceTree: '"<group>"'
         test.ok(!newProj.hasFile('NotTheAppDelegate.m'))
         test.done()
-    }
+    },
+    'should return true if the nested file is in the project': function (test) {
+        var newProj = new pbx('.');
+        newProj.hash = jsonProject;
+
+        //  sourceTree: '"<group>"'
+        test.ok(newProj.hasFile(path.join('System', 'Library', 'Frameworks', 'AddressBook.framework')))
+        test.done()
+    },
+    'should return false if the nested file is not in the project': function (test) {
+        var newProj = new pbx('.');
+        newProj.hash = jsonProject;
+
+        //  sourceTree: '"<group>"'
+        test.ok(!newProj.hasFile(path.join('System', 'Library', 'Frameworks', 'NotTheAddressBook.framework')))
+        test.done()
+    },
 }

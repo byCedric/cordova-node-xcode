@@ -18,7 +18,8 @@
 var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
-    pbxFile = require('../lib/pbxFile'),
+    pbxFile = require('../lib/pbxFile')
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -63,7 +64,7 @@ exports.addHeaderFile = {
         test.done();
     },
     'should add the PBXFileReference object correctly': function (test) {
-        var newFile = proj.addHeaderFile('Plugins/file.h'),
+        var newFile = proj.addHeaderFile(path.join('Plugins', 'file.h')),
             fileRefSection = proj.pbxFileReferenceSection(),
             fileRefEntry = fileRefSection[newFile.fileRef];
 
@@ -77,14 +78,14 @@ exports.addHeaderFile = {
         test.done();
     },
     'should add to the Plugins PBXGroup group': function (test) {
-        var newFile = proj.addHeaderFile('Plugins/file.h'),
+        var newFile = proj.addHeaderFile(path.join('Plugins', 'file.h')),
             plugins = proj.pbxGroupByName('Plugins');
 
         test.equal(plugins.children.length, 1);
         test.done();
     },
     'should have the right values for the PBXGroup entry': function (test) {
-        var newFile = proj.addHeaderFile('Plugins/file.h'),
+        var newFile = proj.addHeaderFile(path.join('Plugins', 'file.h')),
             plugins = proj.pbxGroupByName('Plugins'),
             pluginObj = plugins.children[0];
 
@@ -94,18 +95,18 @@ exports.addHeaderFile = {
     },
     'duplicate entries': {
         'should return false': function (test) {
-            var newFile = proj.addHeaderFile('Plugins/file.h');
+            var newFile = proj.addHeaderFile(path.join('Plugins', 'file.h'));
 
-            test.ok(!proj.addHeaderFile('Plugins/file.h'));
+            test.ok(!proj.addHeaderFile(path.join('Plugins', 'file.h')));
             test.done();
         },
         'should not add another entry anywhere': function (test) {
-            var newFile = proj.addHeaderFile('Plugins/file.h'),
+            var newFile = proj.addHeaderFile(path.join('Plugins', 'file.h')),
                 fileRefSection = proj.pbxFileReferenceSection(),
                 frsLength = Object.keys(fileRefSection).length,
                 plugins = proj.pbxGroupByName('Plugins');
 
-            proj.addHeaderFile('Plugins/file.h');
+            proj.addHeaderFile(path.join('Plugins', 'file.h'));
 
             test.equal(68, frsLength);
             test.equal(plugins.children.length, 1);

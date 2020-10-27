@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -79,7 +80,7 @@ exports.addWatchApp = {
         var target = proj.addTarget(TARGET_NAME, TARGET_TYPE, TARGET_SUBFOLDER_NAME),
             options = { 'target' : target.uuid };
 
-        var sourceFile = proj.addSourceFile('Plugins/file.m', options),
+        var sourceFile = proj.addSourceFile(path.join('Plugins', 'file.m'), options),
             sourcePhase = proj.addBuildPhase([], 'PBXSourcesBuildPhase', 'Sources', target.uuid),
             resourceFile = proj.addResourceFile('assets.bundle', options),
             resourcePhase = proj.addBuildPhase([], 'PBXResourcesBuildPhase', 'Resources', target.uuid),

@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -105,22 +106,22 @@ exports.removeSourceFile = {
     },
     'should remove the PBXFileReference object correctly': function (test) {
         proj.addSourceFile('file.m');
-        var newFile = proj.removeSourceFile('Plugins/file.m'),
+        var newFile = proj.removeSourceFile(path.join('Plugins', 'file.m')),
             fileRefSection = proj.pbxFileReferenceSection(),
             fileRefEntry = fileRefSection[newFile.fileRef];
         test.ok(!fileRefEntry);
         test.done();
     },
     'should remove from the Plugins PBXGroup group': function (test) {
-        proj.addSourceFile('Plugins/file.m');
-        var newFile = proj.removeSourceFile('Plugins/file.m'),
+        proj.addSourceFile(path.join('Plugins', 'file.m'));
+        var newFile = proj.removeSourceFile(path.join('Plugins', 'file.m')),
             plugins = proj.pbxGroupByName('Plugins');
         test.equal(plugins.children.length, 0);
         test.done();
     },
     'should have the right values for the PBXGroup entry': function (test) {
-        proj.addSourceFile('Plugins/file.m');
-        var newFile = proj.removeSourceFile('Plugins/file.m'),
+        proj.addSourceFile(path.join('Plugins', 'file.m'));
+        var newFile = proj.removeSourceFile(path.join('Plugins', 'file.m')),
             plugins = proj.pbxGroupByName('Plugins'),
             pluginObj = plugins.children[0];
 
@@ -128,16 +129,16 @@ exports.removeSourceFile = {
         test.done();
     },
     'should remove from the PBXSourcesBuildPhase': function (test) {
-        proj.addSourceFile('Plugins/file.m');
-        var newFile = proj.removeSourceFile('Plugins/file.m'),
+        proj.addSourceFile(path.join('Plugins', 'file.m'));
+        var newFile = proj.removeSourceFile(path.join('Plugins', 'file.m')),
             sources = proj.pbxSourcesBuildPhaseObj();
 
         test.equal(sources.files.length, 2);
         test.done();
     },
     'should have the right values for the Sources entry': function (test) {
-        proj.addSourceFile('Plugins/file.m');
-        var newFile = proj.removeSourceFile('Plugins/file.m'),
+        proj.addSourceFile(path.join('Plugins', 'file.m'));
+        var newFile = proj.removeSourceFile(path.join('Plugins', 'file.m')),
             sources = proj.pbxSourcesBuildPhaseObj(),
             sourceObj = sources.files[2];
 
@@ -145,7 +146,7 @@ exports.removeSourceFile = {
         test.done();
     },
     'should remove file from PBXFileReference after modified by Xcode': function(test) {
-        var fileRef = proj.addSourceFile('Plugins/file.m').fileRef;
+        var fileRef = proj.addSourceFile(path.join('Plugins', 'file.m')).fileRef;
 
         // Simulate Xcode's behaviour of stripping quotes around path and name
         // properties.

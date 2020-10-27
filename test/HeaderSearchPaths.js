@@ -19,6 +19,7 @@ var fullProject = require('./fixtures/full-project')
     fullProjectStr = JSON.stringify(fullProject),
     pbx = require('../lib/pbxProject'),
     pbxFile = require('../lib/pbxFile'),
+    path = require('path'),
     proj = new pbx('.');
 
 function cleanHash() {
@@ -34,9 +35,7 @@ var PRODUCT_NAME = '"KitchenSinktablet"';
 
 exports.addAndRemoveToFromHeaderSearchPaths = {
     'add should add the path to each configuration section':function(test) {
-        proj.addToHeaderSearchPaths({
-            path:'some/path/include'
-        });
+        proj.addToHeaderSearchPaths({ path: path.join('some', 'path', 'include') });
         var config = proj.pbxXCBuildConfigurationSection();
         for (var ref in config) {
             if (ref.indexOf('_comment') > -1 || config[ref].buildSettings.PRODUCT_NAME != PRODUCT_NAME) continue;
@@ -46,7 +45,7 @@ exports.addAndRemoveToFromHeaderSearchPaths = {
         test.done();
     },
     'add should not mangle string arguments and add to each config section':function(test) {
-        var includePath = '../../some/path';
+        var includePath = path.join('..', '..', 'some', 'path');
         proj.addToHeaderSearchPaths(includePath);
         var config = proj.pbxXCBuildConfigurationSection();
         for (var ref in config) {
@@ -57,13 +56,9 @@ exports.addAndRemoveToFromHeaderSearchPaths = {
         test.done();
     },
     'remove should remove from the path to each configuration section':function(test) {
-        var libPath = 'some/path/include';
-        proj.addToHeaderSearchPaths({
-            path:libPath
-        });
-        proj.removeFromHeaderSearchPaths({
-            path:libPath
-        });
+        var libPath = path.join('some', 'path', 'include');
+        proj.addToHeaderSearchPaths({ path: libPath });
+        proj.removeFromHeaderSearchPaths({ path: libPath });
         var config = proj.pbxXCBuildConfigurationSection();
         for (var ref in config) {
             if (ref.indexOf('_comment') > -1 || config[ref].buildSettings.PRODUCT_NAME != PRODUCT_NAME) continue;
